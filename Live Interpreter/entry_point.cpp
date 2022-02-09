@@ -83,6 +83,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
         // 1. Show the demo window
         ImPlot::ShowInterpreterWindow();
+        ImGui::ShowDemoWindow();
 
         
         // Rendering
