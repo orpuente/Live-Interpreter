@@ -1,18 +1,48 @@
 #include "pch.h"
 #include "StrategyMaker.h"
 #include "yen_evaluator.h"
-#include "CalcStar.h"
+#include "exprtk/exprtk.hpp"
 
-std::string cs_evaluator(const char* buf, const size_t buf_size)
+std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 {
-	static CSTAR::CSFunctionEvaluator cs_evaluator;
-	cs_evaluator.Set_strExpression(buf);
-	int eval_code = cs_evaluator.Evaluate();
+	typedef double T;
+	typedef exprtk::symbol_table<T> symbol_table_t;
+	typedef exprtk::expression<T>   expression_t;
+	typedef exprtk::parser<T>       parser_t;
 
-	if (eval_code == 1)
-		return std::format("{}", cs_evaluator.Get_dblCurrValue());
-	else
-		return "syntax error";
+	static bool init = false;
+	static std::string expression_string;
+	static T p = 42.51;
+	static symbol_table_t symbol_table;
+	static expression_t expression;
+	static parser_t parser;
+	static T last_value = std::numeric_limits<T>::quiet_NaN();
+
+	if (!init)
+	{
+		symbol_table.add_variable("p", p);
+		symbol_table.add_constants();
+		init = true;
+		expression.register_symbol_table(symbol_table);
+	}
+
+	const std::string new_exp(buf);
+
+	if (new_exp != expression_string)
+	{
+		expression_string = new_exp;
+		if(!parser.compile(expression_string, expression))
+		{
+			// compilation error
+			last_value = std::numeric_limits<T>::quiet_NaN();
+		}
+		else
+		{
+			last_value = expression.value();
+		}
+	}
+
+	return std::format("{}", last_value);
 }
 
 void Show_StrategyMaker()
@@ -24,5 +54,5 @@ void Show_StrategyMaker()
 	ImGui::InputTextMultiline("##Text parser", buf, buf_size);
 	ImGui::NewLine();	
 
-	ImGui::Text(std::format("Evaluates to: {}", cs_evaluator(buf, buf_size)).c_str());
+	ImGui::Text(std::format("Evaluates to: {}", exprtk_evaluator(buf, buf_size)).c_str());
 }
