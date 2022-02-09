@@ -39,7 +39,7 @@
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\implot\live_interpreter.cpp">
+    <ClCompile Include="src\live_interpreter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vendor\implot\implot.cpp">
@@ -48,7 +48,7 @@
     <ClCompile Include="vendor\implot\implot_items.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\implot\StrategyMaker.cpp">
+    <ClCompile Include="src\StrategyMaker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\yen_evaluator.cpp">
@@ -86,7 +86,7 @@
     <ClInclude Include="vendor\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\implot\live_interpreter.h">
+    <ClInclude Include="src\live_interpreter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vendor\implot\implot.h">
@@ -95,7 +95,7 @@
     <ClInclude Include="vendor\implot\implot_internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\implot\StrategyMaker.h">
+    <ClInclude Include="src\StrategyMaker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\yen_evaluator.h">
