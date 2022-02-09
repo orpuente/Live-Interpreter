@@ -55,7 +55,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-    io.Fonts->AddFontFromFileTTF("C:\\dev\\Puente Trading Fund\\IME\\IME\\vendor\\fonts\\FiraMono-Regular.ttf", 36);
+    io.Fonts->AddFontFromFileTTF("C:\\dev\\Puente Trading Fund\\IME\\IME\\vendor\\fonts\\FiraMono-Regular.ttf", 32);
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);

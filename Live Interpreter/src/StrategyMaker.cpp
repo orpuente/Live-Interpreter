@@ -18,9 +18,14 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 	static parser_t parser;
 	static T last_value = std::numeric_limits<T>::quiet_NaN();
 
+	static T x = 0, y = 0, z = 0;
+
 	if (!init)
 	{
 		symbol_table.add_variable("p", p);
+		symbol_table.add_variable("x", x);
+		symbol_table.add_variable("y", y);
+		symbol_table.add_variable("z", z);
 		symbol_table.add_constants();
 		init = true;
 		expression.register_symbol_table(symbol_table);
@@ -30,6 +35,9 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 
 	if (new_exp != expression_string)
 	{
+		x = 0;
+		y = 0;
+		z = 0;
 		expression_string = new_exp;
 		if(!parser.compile(expression_string, expression))
 		{
@@ -47,7 +55,7 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 
 void Show_StrategyMaker()
 {
-	static constexpr size_t buf_size = 32;
+	static constexpr size_t buf_size = 64;
 	static char buf[buf_size];	
 
 	ImGui::Text("Text Parser");
