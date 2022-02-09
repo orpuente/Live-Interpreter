@@ -35,12 +35,6 @@ namespace ImPlot {
 
         if (ImGui::BeginTabBar("ImPlotDemoTabs")) {
 
-            if (ImGui::BeginTabItem("Strategy Maker"))
-            {
-                Show_StrategyMaker();
-                ImGui::EndTabItem();
-            }
-            
             if (ImGui::BeginTabItem("Settings")) {
                 ShowDemo_Configuration();
                 ImGui::EndTabItem();
