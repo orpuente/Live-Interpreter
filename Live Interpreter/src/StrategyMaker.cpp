@@ -16,7 +16,8 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 	static symbol_table_t symbol_table;
 	static expression_t expression;
 	static parser_t parser;
-	static T last_value = std::numeric_limits<T>::quiet_NaN();
+	static bool default_value = false;
+	static bool last_value = default_value;
 
 	static T x = 0, y = 0, z = 0;
 
@@ -42,7 +43,7 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 		if(!parser.compile(expression_string, expression))
 		{
 			// compilation error
-			last_value = std::numeric_limits<T>::quiet_NaN();
+			last_value = default_value;
 		}
 		else
 		{
@@ -55,17 +56,44 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 
 void Show_StrategyMaker()
 {
-	static constexpr size_t buf_size = 64;
-	static char buf[buf_size];	
+	static ImGuiTableFlags flags =
+		ImGuiTableFlags_Borders		|
+		ImGuiTableFlags_RowBg		|
+		ImGuiTableFlags_NoHostExtendX;
 
-	ImGui::Text("Text Parser");
-	ImGui::InputTextMultiline("##Text parser", buf, buf_size);
-	ImGui::NewLine();
+	static constexpr size_t buf_size = 32;
+	static char buf[2][2][buf_size];
+	static char headersCol[2][16] = {"Flat", "Long"};
 
-	if (ImGui::BeginTable("Strategy Maker"))
+	ImGui::Spacing();
+	
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+	if (ImGui::BeginTable("table1", 3, flags))
 	{
-		
-	}
+		// Display headers so we can inspect their interaction with borders.
+		// (Headers are not the main purpose of this section of the demo, so we are not elaborating on them too much. See other sections for details)
 
-	//ImGui::Text(std::format("Evaluates to: {}", exprtk_evaluator(buf, buf_size)).c_str());
+		ImGui::TableSetupColumn("");
+		ImGui::TableSetupColumn("Flat");
+		ImGui::TableSetupColumn("Long");
+		ImGui::TableHeadersRow();
+		for (int row = 0; row < 2; row++)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TableHeader(headersCol[row]);
+			for (int col = 1; col < 2+1; col++)
+			{
+				ImGui::TableSetColumnIndex(col);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::InputTextMultiline(std::format("##{}{}", row, col).c_str(), buf[row][col], buf_size, ImVec2(0, 100));
+			}
+		}
+
+		ImGui::EndTable();
+
+		for (int row = 0; row < 2; row++)
+			for (int col = 0; col < 2; col++)
+				ImGui::Text(std::format("Entry {}{} evals to: {}", row, col, exprtk_evaluator(buf[row][col], buf_size)).c_str());
+	}
 }
