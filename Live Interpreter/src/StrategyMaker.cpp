@@ -3,56 +3,64 @@
 #include "yen_evaluator.h"
 #include "exprtk/exprtk.hpp"
 
-std::string exprtk_evaluator(const char* buf, const size_t buf_size)
+class EvaluatorWrapper
 {
+public:
+	EvaluatorWrapper()
+	{
+		reset_free_variables();
+		symbol_table.add_variable("p", p);
+		unknown_var_symbol_table.add_constants();
+		expression.register_symbol_table(unknown_var_symbol_table);
+		expression.register_symbol_table(symbol_table);
+		parser.enable_unknown_symbol_resolver();
+	}
+
+	// eval
+	std::string operator() (const char* buf, const size_t buf_size)
+	{
+		const std::string new_buf(buf);
+		if (expression_string != new_buf)
+		{
+			expression_string = new_buf;
+			reset_free_variables();
+			last_compilation_successful_p = parser.compile(expression_string, expression);
+		}
+
+		if (last_compilation_successful_p)
+			return std::format("{}", expression.value());
+		return default_value;
+	}
+
+	void reset_free_variables()
+	{
+		std::vector<std::string> variable_list;
+		unknown_var_symbol_table.get_variable_list(variable_list);
+		for (auto& var_name : variable_list)
+		{
+			T& v = unknown_var_symbol_table.variable_ref(var_name);
+			v = T{};
+		}
+	}
+
+private:
 	typedef double T;
 	typedef exprtk::symbol_table<T> symbol_table_t;
 	typedef exprtk::expression<T>   expression_t;
 	typedef exprtk::parser<T>       parser_t;
 
-	static bool init = false;
-	static std::string expression_string;
-	static T p = 42.51;
-	static symbol_table_t symbol_table;
-	static expression_t expression;
-	static parser_t parser;
-	static T default_value = std::numeric_limits<T>::quiet_NaN();
-	static T last_value = default_value;
+	symbol_table_t unknown_var_symbol_table;
+	symbol_table_t symbol_table;
+	std::string expression_string;
+	expression_t expression;
+	parser_t parser;
 
-	static T x = 0, y = 0, z = 0;
+	const std::string default_value = std::format("{}", std::numeric_limits<double>::quiet_NaN());
+	bool last_compilation_successful_p = false;
 
-	if (!init)
-	{
-		symbol_table.add_variable("p", p);
-		symbol_table.add_variable("x", x);
-		symbol_table.add_variable("y", y);
-		symbol_table.add_variable("z", z);
-		symbol_table.add_constants();
-		init = true;
-		expression.register_symbol_table(symbol_table);
-	}
-
-	const std::string new_exp(buf);
-
-	if (new_exp != expression_string)
-	{
-		x = 0;
-		y = 0;
-		z = 0;
-		expression_string = new_exp;
-		if(!parser.compile(expression_string, expression))
-		{
-			// compilation error
-			last_value = default_value;
-		}
-		else
-		{
-			last_value = expression.value();
-		}
-	}
-
-	return std::format("{}", last_value);
-}
+	// variables
+	double p = 42.56;
+};
 
 void Show_StrategyMaker()
 {
@@ -64,6 +72,7 @@ void Show_StrategyMaker()
 	static constexpr size_t buf_size = 32;
 	static char buf[2][2][buf_size];
 	static char headersCol[2][16] = {"Flat", "Long"};
+	static EvaluatorWrapper cell_evaluator[2][2];
 
 	ImGui::Spacing();
 	
@@ -82,9 +91,9 @@ void Show_StrategyMaker()
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::TableHeader(headersCol[row]);
-			for (int col = 1; col < 2+1; col++)
+			for (int col = 0; col < 2; col++)
 			{
-				ImGui::TableSetColumnIndex(col);
+				ImGui::TableSetColumnIndex(col + 1); // col(0) are the headers
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputTextMultiline(std::format("##{}{}", row, col).c_str(), buf[row][col], buf_size, ImVec2(0, 100));
 			}
@@ -94,6 +103,6 @@ void Show_StrategyMaker()
 
 		for (int row = 0; row < 2; row++)
 			for (int col = 0; col < 2; col++)
-				ImGui::Text(std::format("Entry {}{} evals to: {}", row, col, exprtk_evaluator(buf[row][col], buf_size)).c_str());
+				ImGui::Text(std::format("Entry {}{} evals to: {}", row, col, cell_evaluator[row][col](buf[row][col], buf_size)).c_str());
 	}
 }
