@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "StrategyMaker.h"
-#include "yen_evaluator.h"
+#include "cell_evaluator.h"
 #include "exprtk/exprtk.hpp"
 
 std::string exprtk_evaluator(const char* buf, const size_t buf_size)
@@ -64,6 +64,8 @@ void Show_StrategyMaker()
 	static constexpr size_t buf_size = 32;
 	static char buf[2][2][buf_size];
 	static char headersCol[2][16] = {"Flat", "Long"};
+	static CellEvaluator cell_evals[2][2];
+	static float p = 42.5;
 
 	ImGui::Spacing();
 	
@@ -94,6 +96,9 @@ void Show_StrategyMaker()
 
 		for (int row = 0; row < 2; row++)
 			for (int col = 0; col < 2; col++)
-				ImGui::Text(std::format("Entry {}{} evals to: {}", row, col, exprtk_evaluator(buf[row][col], buf_size)).c_str());
+				ImGui::Text(std::format("Entry {}{} evals to: {}", row, col, cell_evals[row][col].evaluate(buf[row][col], buf_size)).c_str());
 	}
+	ImGui::NewLine();
+	ImGui::SliderFloat("##P_value", &p, 0, 100, "$%.2g");
+	cell_evals[0][0].update_value("p", p);
 }
