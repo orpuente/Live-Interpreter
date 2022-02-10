@@ -16,8 +16,8 @@ std::string exprtk_evaluator(const char* buf, const size_t buf_size)
 	static symbol_table_t symbol_table;
 	static expression_t expression;
 	static parser_t parser;
-	static bool default_value = false;
-	static bool last_value = default_value;
+	static T default_value = std::numeric_limits<T>::quiet_NaN();
+	static T last_value = default_value;
 
 	static T x = 0, y = 0, z = 0;
 
