@@ -60,7 +60,12 @@ void Show_StrategyMaker()
 
 	ImGui::Text("Text Parser");
 	ImGui::InputTextMultiline("##Text parser", buf, buf_size);
-	ImGui::NewLine();	
+	ImGui::NewLine();
 
-	ImGui::Text(std::format("Evaluates to: {}", exprtk_evaluator(buf, buf_size)).c_str());
+	if (ImGui::BeginTable("Strategy Maker"))
+	{
+		
+	}
+
+	//ImGui::Text(std::format("Evaluates to: {}", exprtk_evaluator(buf, buf_size)).c_str());
 }
