@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "StrategyMaker.h"
-#include "yen_evaluator.h"
-#include "exprtk/exprtk.hpp"
 
 class EvaluatorWrapper
 {
@@ -28,7 +26,7 @@ public:
 		}
 
 		if (last_compilation_successful_p)
-			return std::format("{}", expression.value());
+			return std::format("{}", static_cast<bool>(expression.value()));
 		return default_value;
 	}
 
@@ -48,13 +46,11 @@ private:
 	typedef exprtk::symbol_table<T> symbol_table_t;
 	typedef exprtk::expression<T>   expression_t;
 	typedef exprtk::parser<T>       parser_t;
-
 	symbol_table_t unknown_var_symbol_table;
 	symbol_table_t symbol_table;
 	std::string expression_string;
 	expression_t expression;
 	parser_t parser;
-
 	const std::string default_value = std::format("{}", std::numeric_limits<double>::quiet_NaN());
 	bool last_compilation_successful_p = false;
 

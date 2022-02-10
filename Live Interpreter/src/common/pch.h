@@ -20,6 +20,7 @@
 #include <concepts>
 #include <conio.h>
 #include <random>
+#include <cstdio>
 //#include <minmax.h> /* there is an error inside SFML if include this */
 
 // std data structure
@@ -45,5 +46,13 @@
 // Window Management
 #include <GLFW/glfw3.h>
 
-// cuda toolkit
-//#include <cuda_runtime.h>
+// exprtk
+#include "exprtk/exprtk.hpp"
+
+// ImGui
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+// ImPlot
+#include "implot.h"

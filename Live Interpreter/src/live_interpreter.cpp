@@ -1,10 +1,8 @@
 #include "pch.h"
-#include "implot.h"
 #include "live_interpreter.h"
 #include "StrategyMaker.h"
 
-
-namespace ImPlot {
+namespace Interpreter {
 
     void ShowDemo_Configuration() {
         ImGui::ShowFontSelector("Font");

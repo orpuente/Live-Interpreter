@@ -1,11 +1,10 @@
 #include "pch.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "implot.h"
+//#include "imgui.h"
+//#include "imgui_impl_glfw.h"
+//#include "imgui_impl_opengl3.h"
 #include "live_interpreter.h"
-#include <cstdio>
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+//#include <cstdio>
+//#include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
@@ -82,7 +81,7 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
         ImPlot::GetStyle().UseLocalTime = true;
 
         // 1. Show the demo window
-        ImPlot::ShowInterpreterWindow();
+        Interpreter::ShowInterpreterWindow();
         //ImGui::ShowDemoWindow();
 
         
