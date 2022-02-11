@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "StrategyMaker.h"
 
-struct NameValuePair {
+struct NameValuePair
+{
 	double v;
 	std::string n;
 };
@@ -19,7 +20,7 @@ public:
 	}
 
 	// eval
-	std::string operator() (const char* buf, const size_t buf_size)
+	std::string operator()(const char* buf, const size_t buf_size)
 	{
 		const std::string new_buf(buf);
 		if (expression_string != new_buf)
@@ -30,12 +31,22 @@ public:
 		}
 
 		if (last_compilation_successful_p)
-			return std::format("{}", static_cast<double>(expression.value()));
+			return std::format("{}", expression.value());
 		return default_value;
 	}
 
-	void add_variable(std::string name, double& val) {
-		symbol_table.add_variable(name, val, true);
+	static void add_variable(const std::string& name, double& val)
+	{
+		symbol_table.add_variable(name, val, false);
+	}
+
+	static void update_variable(const std::string& name, const double val)
+	{
+		if (symbol_table.symbol_exists(name))
+		{
+			symbol_table.variable_ref(name) = val;
+			std::cout << "updating " << name << "\n";
+		}
 	}
 
 	static void reset_free_variables()
@@ -50,12 +61,12 @@ public:
 	}
 
 private:
-	typedef double T;
-	typedef exprtk::symbol_table<T> symbol_table_t;
-	typedef exprtk::expression<T>   expression_t;
-	typedef exprtk::parser<T>       parser_t;
+	using T = double;
+	using symbol_table_t = exprtk::symbol_table<T>;
+	using expression_t = exprtk::expression<T>;
+	using parser_t = exprtk::parser<T>;
 	static symbol_table_t unknown_var_symbol_table;
-	symbol_table_t symbol_table;
+	static symbol_table_t symbol_table;
 	std::string expression_string;
 	expression_t expression;
 	parser_t parser;
@@ -64,45 +75,48 @@ private:
 };
 
 exprtk::symbol_table<double> EvaluatorWrapper::unknown_var_symbol_table = exprtk::symbol_table<double>();
-
+exprtk::symbol_table<double> EvaluatorWrapper::symbol_table = exprtk::symbol_table<double>();
 
 
 void Show_StrategyMaker()
 {
 	static ImGuiTableFlags flags =
-		ImGuiTableFlags_Borders		|
-		ImGuiTableFlags_RowBg		|
+		ImGuiTableFlags_Borders |
+		ImGuiTableFlags_RowBg |
 		ImGuiTableFlags_NoHostExtendX;
 
-	static constexpr size_t buf_size = 64;
-	static char buf[2][2][buf_size];
 	static char headersCol[2][16] = {"Flat", "Long"};
-	static EvaluatorWrapper cell_evaluator[2][2];
-	static bool init = false;
+
+	// Goal: protect `p` from changes inside the evaluator
+	// TODO: improve the horrendous solution below
 	static double p = 41.52;
-	
-	if (!init) {
-		for (int row = 0; row < 2; row++)
-			for (int col = 0; col < 2; col++)
-				cell_evaluator[row][col].add_variable("p", p);
+	static double p_ = p;    // horrendous solution ^(O_O)^ But it works
+
+	if (static bool init = false; !init)
+	{
+		EvaluatorWrapper::add_variable("p", p_);
 		init = true;
 	}
 
 	ImGui::Spacing();
 
 	ImGui::Text("Enter the value of p: ");
-	ImGui::InputDouble("##p input", &p, .5, 10, "%.2f");
+	if (ImGui::InputDouble("##p input", &p, .01, 1, "%.2f"))
+	{
+		
+	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 	if (ImGui::BeginTable("table1", 3, flags))
 	{
-		// Display headers so we can inspect their interaction with borders.
-		// (Headers are not the main purpose of this section of the demo, so we are not elaborating on them too much. See other sections for details)
+		static constexpr size_t buf_size = 64;
+		static char buf[2][2][buf_size];
 
 		ImGui::TableSetupColumn("");
 		ImGui::TableSetupColumn("Flat");
 		ImGui::TableSetupColumn("Long");
 		ImGui::TableHeadersRow();
+
 		for (int row = 0; row < 2; row++)
 		{
 			ImGui::TableNextRow();
@@ -112,14 +126,20 @@ void Show_StrategyMaker()
 			{
 				ImGui::TableSetColumnIndex(col + 1); // col(0) are the headers
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-				ImGui::InputTextMultiline(std::format("##{}{}", row, col).c_str(), buf[row][col], buf_size, ImVec2(0, 100));
+				ImGui::InputTextMultiline(std::format("##{}{}", row, col).c_str(), buf[row][col], buf_size,
+				                          ImVec2(0, 100));
 			}
 		}
 
 		ImGui::EndTable();
 
-		for (int row = 0; row < 2; row++)
-			for (int col = 0; col < 2; col++)
-				ImGui::Text(std::format("Entry {}{} evals to: {}", row, col, cell_evaluator[row][col](buf[row][col], buf_size)).c_str());
+		for (int row = 0; row < 2; row++) {
+			for (int col = 0; col < 2; col++) {
+				p_ = p;
+				static EvaluatorWrapper cell_evaluator[2][2];
+				ImGui::Text(std::format("Entry {}{} evaluates to: {}", row, col,
+					cell_evaluator[row][col](buf[row][col], buf_size)).c_str());
+			}
+		}
 	}
 }
