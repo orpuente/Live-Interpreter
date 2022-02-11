@@ -21,6 +21,7 @@
 #include <conio.h>
 #include <random>
 #include <cstdio>
+#include <regex>
 //#include <minmax.h> /* there is an error inside SFML if include this */
 
 // std data structure
