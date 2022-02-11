@@ -35,7 +35,7 @@ public:
 	}
 
 	void add_variable(std::string name, double& val) {
-		symbol_table.add_variable(name, val);
+		symbol_table.add_variable(name, val, true);
 	}
 
 	void reset_free_variables()
@@ -64,6 +64,8 @@ private:
 };
 
 exprtk::symbol_table<double> EvaluatorWrapper::unknown_var_symbol_table = exprtk::symbol_table<double>();
+
+
 
 void Show_StrategyMaker()
 {
