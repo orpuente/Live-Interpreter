@@ -90,7 +90,7 @@ void Show_StrategyMaker()
 	// Goal: protect `p` from changes inside the evaluator
 	// TODO: improve the horrendous solution below
 	static double p = 41.52;
-	static double p_ = p;    // horrendous solution ^(O_O)^ But it works
+	static double p_ = p; // horrendous solution ^(O_O)^ But it works
 
 	if (static bool init = false; !init)
 	{
@@ -103,7 +103,6 @@ void Show_StrategyMaker()
 	ImGui::Text("Enter the value of p: ");
 	if (ImGui::InputDouble("##p input", &p, .01, 1, "%.2f"))
 	{
-		
 	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
@@ -133,12 +132,14 @@ void Show_StrategyMaker()
 
 		ImGui::EndTable();
 
-		for (int row = 0; row < 2; row++) {
-			for (int col = 0; col < 2; col++) {
+		for (int row = 0; row < 2; row++)
+		{
+			for (int col = 0; col < 2; col++)
+			{
 				p_ = p;
 				static EvaluatorWrapper cell_evaluator[2][2];
 				ImGui::Text(std::format("Entry {}{} evaluates to: {}", row, col,
-					cell_evaluator[row][col](buf[row][col], buf_size)).c_str());
+				                        cell_evaluator[row][col](buf[row][col], buf_size)).c_str());
 			}
 		}
 	}
