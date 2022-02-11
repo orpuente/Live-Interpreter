@@ -38,7 +38,7 @@ public:
 		symbol_table.add_variable(name, val, true);
 	}
 
-	void reset_free_variables()
+	static void reset_free_variables()
 	{
 		std::vector<std::string> variable_list;
 		unknown_var_symbol_table.get_variable_list(variable_list);
@@ -74,7 +74,7 @@ void Show_StrategyMaker()
 		ImGuiTableFlags_RowBg		|
 		ImGuiTableFlags_NoHostExtendX;
 
-	static constexpr size_t buf_size = 32;
+	static constexpr size_t buf_size = 64;
 	static char buf[2][2][buf_size];
 	static char headersCol[2][16] = {"Flat", "Long"};
 	static EvaluatorWrapper cell_evaluator[2][2];
