@@ -30,15 +30,12 @@ public:
 		}
 
 		if (last_compilation_successful_p)
-			return std::format("{}", static_cast<bool>(expression.value()));
+			return std::format("{}", static_cast<double>(expression.value()));
 		return default_value;
 	}
 
 	void add_variable(std::string name, double& val) {
-		if (!symbol_table.is_variable(name)) {
-			//reset_free_variables();
-			symbol_table.add_variable(name, val);
-		}
+		symbol_table.add_variable(name, val);
 	}
 
 	void reset_free_variables()
@@ -57,7 +54,7 @@ private:
 	typedef exprtk::symbol_table<T> symbol_table_t;
 	typedef exprtk::expression<T>   expression_t;
 	typedef exprtk::parser<T>       parser_t;
-	symbol_table_t unknown_var_symbol_table;
+	static symbol_table_t unknown_var_symbol_table;
 	symbol_table_t symbol_table;
 	std::string expression_string;
 	expression_t expression;
@@ -65,6 +62,8 @@ private:
 	const std::string default_value = std::format("{}", std::numeric_limits<double>::quiet_NaN());
 	bool last_compilation_successful_p = false;
 };
+
+exprtk::symbol_table<double> EvaluatorWrapper::unknown_var_symbol_table = exprtk::symbol_table<double>();
 
 void Show_StrategyMaker()
 {
