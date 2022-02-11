@@ -1,13 +1,17 @@
 #include "pch.h"
 #include "StrategyMaker.h"
 
+struct NameValuePair {
+	double v;
+	std::string n;
+};
+
 class EvaluatorWrapper
 {
 public:
 	EvaluatorWrapper()
 	{
 		reset_free_variables();
-		symbol_table.add_variable("p", p);
 		unknown_var_symbol_table.add_constants();
 		expression.register_symbol_table(unknown_var_symbol_table);
 		expression.register_symbol_table(symbol_table);
@@ -28,6 +32,13 @@ public:
 		if (last_compilation_successful_p)
 			return std::format("{}", static_cast<bool>(expression.value()));
 		return default_value;
+	}
+
+	void add_variable(std::string name, double& val) {
+		if (!symbol_table.is_variable(name)) {
+			//reset_free_variables();
+			symbol_table.add_variable(name, val);
+		}
 	}
 
 	void reset_free_variables()
@@ -53,9 +64,6 @@ private:
 	parser_t parser;
 	const std::string default_value = std::format("{}", std::numeric_limits<double>::quiet_NaN());
 	bool last_compilation_successful_p = false;
-
-	// variables
-	double p = 42.56;
 };
 
 void Show_StrategyMaker()
@@ -69,9 +77,20 @@ void Show_StrategyMaker()
 	static char buf[2][2][buf_size];
 	static char headersCol[2][16] = {"Flat", "Long"};
 	static EvaluatorWrapper cell_evaluator[2][2];
+	static bool init = false;
+	static double p = 41.52;
+	
+	if (!init) {
+		for (int row = 0; row < 2; row++)
+			for (int col = 0; col < 2; col++)
+				cell_evaluator[row][col].add_variable("p", p);
+	}
 
 	ImGui::Spacing();
-	
+
+	ImGui::Text("Enter the value of p: ");
+	ImGui::InputDouble("##p input", &p, .5, 10, "%.2f");
+
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
 	if (ImGui::BeginTable("table1", 3, flags))
 	{
